@@ -1,0 +1,40 @@
+pipeline {
+    agent {label 'api-stg'}
+    environment{fichero = fileExists file: "agriconectabo"}
+    stages {
+        stage('existe carpeta') {
+            when{expression {fichero=='true'}}
+                steps{
+                    echo message: "existe carpeta"
+
+                    sh 'rm -R agriconectabo'
+                    sh 'git clone -b develop https://dmusnoack:nwgADk7A8ERLT8mxJ6U5@bitbucket.org/proinnova_popoyan/agriconectabo.git'
+                    }
+        }
+
+        stage ('no existe') {
+            when{expression {fichero=='false'}}
+                steps{
+                    echo message: "no existe carpeta"
+                       sh 'git clone -b develop https://dmusnoack:nwgADk7A8ERLT8mxJ6U5@bitbucket.org/proinnova_popoyan/agriconectabo.git'
+                       sh 'ls -la'
+                    }
+        }
+
+        stage ('elimna contendido') {
+            steps{
+                echo message: "borrando la carpetia"
+                sh 'rm -r /home/adminsvr/dockers/build/*'
+            }  
+        }
+
+        
+
+        stage ('copia contenido') {
+            steps{
+                sh 'cp -r agriconectabo/dist/* /home/adminsvr/dockers/build/ '
+            }  
+        }
+
+    }
+}
